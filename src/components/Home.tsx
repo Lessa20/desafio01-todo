@@ -1,5 +1,6 @@
 import { Trash, PlusCircle } from 'phosphor-react'
 import clipboard from '../assets/Clipboard.png'
+import styles from './Home.module.css'
 
 interface Task {
     id: number
@@ -27,39 +28,45 @@ const tasks: Task[] = [
 ]
 
 export default function Task() {
+    
+
     return (
         <div>
-            <form>
+            <form className={styles.newTask}>
                 <input placeholder='Adicione uma nova tarefa' />
-                <button>Criar <span><PlusCircle /> </span></button>
+                <button><span>Criar</span><PlusCircle weight='bold' /></button>
             </form>
 
-            <div>
-                <div>Tarefas Criadas <span>0</span></div>
-                <div>Concluídas <span>0</span></div>
-            </div>
-            <div>
-                {
-                    tasks.length === 0 ? (
-                        <div>
-                            <img src={clipboard} />
-                            <strong>Você ainda não tem tarefas cadastradas</strong>
-                            <span>Crie tarefas e organize seus itens a fazer</span>
-                        </div>
-                    ) : (
-                        tasks.map(task => {
-                            return (
-                                <div key={task.id}>
-                                    <span><input type="checkbox" name="done" checked={task.done} /></span>
-                                    {task.description}
-                                    <span><Trash /></span>
-                                </div>
+            <div className={styles.tasks}>
+                <div className={styles.info}>
+                    <div className={styles.counterCreated}>Tarefas Criadas <span>0</span></div>
+                    <div className={styles.counterDone}>Concluídas <span>2 de 5</span></div>
+                </div>
+                <div className={styles.taskList}>
+                    {
+                        tasks.length === 0 ? (
+                            <div className={styles.empty}>
+                                <img src={clipboard} />
+                                <strong>Você ainda não tem tarefas cadastradas</strong>
+                                Crie tarefas e organize seus itens a fazer
+                            </div>
 
-                            )
-                        })
-                    )
-                }
-                
+                        ) : (
+                            tasks.map(task => {
+                                return (
+                                    <label key={task.id} className={styles.task}>
+                                        <input type="checkbox" name="done" checked={task.done} />
+                                        <strong className={task.done ? styles.textTaskDone : styles.textTaskToDo}>{task.description}</strong>
+                                        <button><Trash /></button>
+                                    </label>
+
+                                )
+                            })
+                        )
+                    }
+                </div>
+
+
             </div>
 
         </div >
