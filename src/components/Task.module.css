@@ -1,0 +1,99 @@
+.task {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--gray-500);
+    padding: 1rem 0 1rem 0;
+    border: 1px solid var(--gray-400);
+    border-radius: 8px;
+    font-size: 0.87rem;
+    margin-bottom: 0.75rem;
+    
+}
+
+.task input {
+    position: absolute;
+    cursor: pointer;
+    height: 17.45px;
+    width: 17.45px;
+    outline: none;
+    margin-left: 1rem;
+}
+
+.task strong {
+    display: inline-block;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    width: 100%;
+    font-weight: normal;
+}
+
+.textTaskDone {
+    color: var(--gray-300);
+    text-decoration: line-through;
+}
+
+.textTaskToDo {
+    color: var(--gray-100);
+}
+
+.textTaskToDo:hover {
+    color: var(--gray-200);
+}
+
+.task button {
+    height: 24px;
+    width: 24px;
+    margin-right: 1rem;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--gray-300);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+
+}
+
+.task button:hover {
+    color: var(--purple);
+}
+
+/* Estilo padrão do checkbox */
+input[type=checkbox] {
+    position: relative;
+    cursor: pointer;
+    appearance: none;/* Remove os estilos padrão do navegador */
+}
+
+/* Estilo do checkbox não marcado */
+ input[type=checkbox]:before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 17.45px;
+    height: 17.45px;
+    left: -3px;
+    border-radius: 100%;
+    border: 2px solid var(--blue); 
+}
+ 
+/* Estilo do checkbox marcado */
+input[type=checkbox]:checked:before {
+    background-color: var(--purple); 
+    border-color: var(--purple); 
+} 
+
+/* Ícone de marcação quando o checkbox é marcado */
+input[type=checkbox]:checked:after {
+    content: "\2713";
+    font-size: 0.75rem;
+    color: var(--gray-100);    
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+} 

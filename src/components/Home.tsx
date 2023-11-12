@@ -1,46 +1,111 @@
-import { Trash, PlusCircle } from 'phosphor-react'
+import { PlusCircle } from 'phosphor-react'
 import clipboard from '../assets/Clipboard.png'
 import styles from './Home.module.css'
+import { ChangeEvent, useState, FormEvent, InvalidEvent } from 'react'
+import { v4 as uuidv4 } from 'uuid';
+import Task from './Task'
+import { TaskProps } from './types'
 
-interface Task {
-    id: number
-    description: string
-    done: boolean
-}
 
-const tasks: Task[] = [
-    {
-        id: 1,
-        description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem cum at quas quasi accusamus quidem, ipsam aspernatur esse voluptate assumenda delectus numquam sed saepe nihil cumque, inventore ducimus neque pariatur!",
-        done: false,
-    },
-    {
-        id: 2,
-        description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit, eligendi doloremque pariatur similique amet ad! Ut, vero quisquam. Tempore corrupti omnis perspiciatis aliquam amet ipsa recusandae ea rem, officia id?",
-        done: false,
-    },
-    {
-        id: 3,
-        description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos temporibus nesciunt molestiae doloribus qui hic velit reprehenderit neque? Voluptate aliquid voluptatibus blanditiis laboriosam! Nostrum pariatur, iure unde minima alias a?",
-        done: true,
-    },
+export default function Home() {
+    const [tasks, setTasks] = useState<TaskProps[]>([])
+    const [newTask, setNewTask] = useState('')
 
-]
+    const [countCreatedTasks, setCountCreatedTasks] = useState(0)
+    const [countDoneTasks, setCountDoneTasks] = useState(0)
 
-export default function Task() {
-    
+    const isNewTaskEmpty = newTask.length == 0;
+
+
+    function handleNewtaskOnChange(event: ChangeEvent<HTMLInputElement>) {
+        event.target.setCustomValidity('')
+        setNewTask(event.target.value)
+    }
+
+    function handleAddNewTask(event: FormEvent) {
+        event.preventDefault();
+
+        setTasks(
+            [...tasks,
+            {
+                id: uuidv4(),
+                description: newTask,
+                done: false,
+                onDeleteTask: deleteTask,
+                onCheckTask: setDoneTask
+            }
+            ]
+        )
+        setNewTask('');
+        setCountCreatedTasks(tasks.length + 1)
+    }
+
+    function deleteTask(taskId: string) {
+        const taskToDelete = tasks.find(task => task.id === taskId);
+
+        if (taskToDelete && taskToDelete.done) {
+            setCountDoneTasks(countDoneTasks - 1);
+        }
+
+        const taskDeleteWithoutDeletedOne = tasks.filter(task => {
+            return task.id != taskId;
+        });
+
+        setTasks(taskDeleteWithoutDeletedOne)
+        setCountCreatedTasks(tasks.length - 1)
+    }
+
+    function setDoneTask(taskId: string) {
+
+        let tasksDone = tasks.filter(task => task.done === true).length
+
+        setTasks(
+            tasks.map(task => {
+                if (task.id === taskId) {
+                    tasksDone = task.done === true ? tasksDone - 1 : tasksDone + 1
+                    return { ...task, done: !task.done };
+                }
+                return task;
+            })
+        )
+
+        setCountDoneTasks(tasksDone)
+    }
+
+    function handleNewTaskInvalid(event : InvalidEvent<HTMLInputElement>) {
+        event.target.setCustomValidity("Uai?! Cadê a tarefa???")
+    }
+
 
     return (
-        <div>
-            <form className={styles.newTask}>
-                <input placeholder='Adicione uma nova tarefa' />
-                <button><span>Criar</span><PlusCircle weight='bold' /></button>
+
+        <>
+            <form className={styles.newTask} onSubmit={handleAddNewTask}>
+                <input
+                    placeholder='Adicione uma nova tarefa'
+                    value={newTask}
+                    onChange={handleNewtaskOnChange}
+                    onInvalid={handleNewTaskInvalid}
+                    required
+                />
+                <button 
+                    type='submit'
+                    disabled={isNewTaskEmpty}
+                >
+                    <span>Criar</span>
+                    <PlusCircle weight='bold' />
+                </button>
             </form>
 
             <div className={styles.tasks}>
                 <div className={styles.info}>
-                    <div className={styles.counterCreated}>Tarefas Criadas <span>0</span></div>
-                    <div className={styles.counterDone}>Concluídas <span>2 de 5</span></div>
+                    <div className={styles.counterCreated}>Tarefas Criadas<span>{countCreatedTasks}</span></div>
+                    <div className={styles.counterDone}>
+                        Concluídas
+                        <span>
+                            {countCreatedTasks > 0 ? `${countDoneTasks} de ${countCreatedTasks}` : 0}
+                        </span>
+                    </div>
                 </div>
                 <div className={styles.taskList}>
                     {
@@ -54,12 +119,14 @@ export default function Task() {
                         ) : (
                             tasks.map(task => {
                                 return (
-                                    <label key={task.id} className={styles.task}>
-                                        <input type="checkbox" name="done" checked={task.done} />
-                                        <strong className={task.done ? styles.textTaskDone : styles.textTaskToDo}>{task.description}</strong>
-                                        <button><Trash /></button>
-                                    </label>
-
+                                    <Task
+                                        key={task.id}
+                                        id={task.id}
+                                        description={task.description}
+                                        done={task.done}
+                                        onDeleteTask={deleteTask}
+                                        onCheckTask={setDoneTask}
+                                    />
                                 )
                             })
                         )
@@ -69,6 +136,6 @@ export default function Task() {
 
             </div>
 
-        </div >
+        </>
     )
 }
